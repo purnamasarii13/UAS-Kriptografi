@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-AES &mdash; CryptoLab</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="/"><i class="bi bi-shield-lock-fill me-1"></i>CryptoLab</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" title="Buka menu navigasi" aria-label="Buka menu navigasi">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
+        <li class="nav-item"><a class="nav-link" href="/des">DES</a></li>
+        <li class="nav-item"><a class="nav-link" href="/sdes">S-DES</a></li>
+        <li class="nav-item"><a class="nav-link" href="/aes">AES-128</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/saes">S-AES</a></li>
+        <li class="nav-item">
+          <button id="themeToggle" class="theme-toggle" title="Ganti tema"><i id="themeIcon" class="bi bi-moon-stars-fill"></i></button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container-xl py-4">
+  <div class="glass module-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <h2 class="mb-1"><i class="bi bi-collection-fill me-2"></i>S-AES &mdash; Simplified AES</h2>
+      <p class="text-muted mb-0">Blok 16 bit &middot; Kunci 16 bit &middot; 2 Round SPN &middot; State Matrix 2x2 nibble</p>
+    </div>
+  </div>
+
+  <div class="row g-4 module-stack">
+    <div class="col-12">
+      <div class="glass p-4">
+        <h5 class="mb-3"><i class="bi bi-pencil-square me-2"></i>Input</h5>
+
+        <div class="mb-3">
+          <label class="form-label">Format Input</label>
+          <div class="format-toggle">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="format" id="fmtBinary" value="binary" checked>
+              <label class="form-check-label" for="fmtBinary">Binary</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="format" id="fmtHex" value="hex">
+              <label class="form-check-label" for="fmtHex">Hexadecimal</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="mode">Mode</label>
+          <select id="mode" class="form-select" title="Pilih mode encrypt atau decrypt">
+            <option value="encrypt">Encrypt (Plaintext &rarr; Ciphertext)</option>
+            <option value="decrypt">Decrypt (Ciphertext &rarr; Plaintext)</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" id="textLabel">Plaintext (16 bit)</label>
+          <input type="text" id="textInput" class="form-control" placeholder="16 bit biner atau 4 digit Hex">
+          <div class="form-text text-muted" id="textHint">Contoh: 1101011100101000</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Key (16 bit)</label>
+          <input type="text" id="keyInput" class="form-control" placeholder="16 bit biner atau 4 digit Hex">
+          <div class="form-text text-muted" id="keyHint">Contoh: 0100101011110101</div>
+        </div>
+        <div id="errorBox" class="d-none mb-3"></div>
+        <div class="form-actions">
+          <div class="action-row">
+            <button id="submitBtn" class="btn btn-gradient flex-fill"><i class="bi bi-play-fill me-1"></i>Submit</button>
+            <button id="loadExampleBtn" class="btn example-btn"><i class="bi bi-magic me-1"></i>Load Example</button>
+            <button id="resetBtn" class="btn btn-outline-glass"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultWrap" class="glass p-4 d-none mt-4">
+        <h5 class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Hasil</h5>
+        <div class="result-box mb-3">
+          <div class="form-label mb-1">Ciphertext Hex</div>
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <div id="resultHex" class="result-value"></div>
+            <button class="btn btn-sm btn-outline-glass copy-btn" onclick="copyToClipboard(document.getElementById('resultHex').textContent, this)"><i class="bi bi-clipboard"></i> Copy</button>
+          </div>
+          <div class="form-label mb-1 mt-3">Ciphertext Binary</div>
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <div id="resultBin" class="result-sub"></div>
+            <button class="btn btn-sm btn-outline-glass copy-btn" onclick="copyToClipboard(document.getElementById('resultBin').textContent, this)"><i class="bi bi-clipboard"></i> Copy</button>
+          </div>
+        </div>
+        <div class="toolbar-btns mb-3">
+          <button id="toggleSolusi" class="btn btn-outline-glass"><i class="bi bi-eye me-1"></i>Tampilkan Solusi Penyelesaian</button>
+        </div>
+        <div id="solutionWrap" class="d-none"><div id="accordionContainer" class="accordion"></div></div>
+      </div>
+      <div id="placeholderWrap" class="glass p-5 text-center text-muted mt-4">
+        <i class="bi bi-arrow-left-circle placeholder-icon"></i>
+        <p class="mt-2 mb-0">Isi form di atas lalu klik Submit untuk melihat proses lengkap S-AES.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="text-center pb-4">© 2026 | Purnamasari Siregar — CryptoLab (Tugas UAS Kriptografi)</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+const modeSel = document.getElementById('mode');
+const textLabel = document.getElementById('textLabel');
+const textInput = document.getElementById('textInput');
+const keyInput = document.getElementById('keyInput');
+const textHint = document.getElementById('textHint');
+const keyHint = document.getElementById('keyHint');
+
+function currentFormat() {
+  return document.querySelector('input[name="format"]:checked').value;
+}
+function refreshLabels() {
+  const fmt = currentFormat();
+  const base = modeSel.value === 'encrypt' ? 'Plaintext' : 'Ciphertext';
+  textLabel.textContent = `${base} (16 bit)`;
+  if (fmt === 'hex') {
+    textInput.placeholder = '4 digit Hex';
+    keyInput.placeholder = '4 digit Hex';
+    textHint.textContent = 'Contoh hex: D728';
+    keyHint.textContent = 'Contoh hex: 4AF5';
+  } else {
+    textInput.placeholder = '16 bit biner';
+    keyInput.placeholder = '16 bit biner';
+    textHint.textContent = 'Contoh biner: 1101011100101000';
+    keyHint.textContent = 'Contoh biner: 0100101011110101';
+  }
+}
+modeSel.addEventListener('change', refreshLabels);
+document.querySelectorAll('input[name="format"]').forEach(r => r.addEventListener('change', refreshLabels));
+refreshLabels();
+
+document.getElementById('loadExampleBtn').addEventListener('click', () => {
+  document.getElementById('fmtHex').checked = true;
+  modeSel.value = 'encrypt';
+  refreshLabels();
+  textInput.value = 'D728';
+  keyInput.value = '4AF5';
+  clearError('errorBox');
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  textInput.value = '';
+  keyInput.value = '';
+  document.getElementById('resultWrap').classList.add('d-none');
+  document.getElementById('placeholderWrap').classList.remove('d-none');
+  document.getElementById('accordionContainer').innerHTML = '';
+  document.getElementById('solutionWrap').classList.add('d-none');
+  document.getElementById('toggleSolusi').innerHTML = '<i class="bi bi-eye me-1"></i>Tampilkan Solusi Penyelesaian';
+  clearError('errorBox');
+});
+
+setupSolutionToggle('toggleSolusi', 'solutionWrap');
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  clearError('errorBox');
+  const mode = modeSel.value;
+  const fmt = currentFormat();
+  const text = textInput.value.trim();
+  const key = keyInput.value.trim();
+  try {
+    const res = await fetch('/api/saes', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({mode, text, key, text_format: fmt, key_format: fmt})
+    });
+    const data = await res.json();
+    if (!res.ok) { showError('errorBox', data.error); return; }
+    renderResult(data, mode);
+  } catch (e) { showError('errorBox', 'Terjadi kesalahan: ' + e.message); }
+});
+
+function stateBlock(label, snap, variant) {
+  return `<div class="mb-3">
+    <div class="form-label mb-1">${label}</div>
+    <div class="d-flex flex-wrap gap-4">
+      <div><div class="text-muted mb-1" style="font-size:.75rem;">HEX (nibble)</div>${renderMatrixTable(snap.hex, variant)}</div>
+      <div><div class="text-muted mb-1" style="font-size:.75rem;">BINARY</div>${renderMatrixTable(snap.bin, variant)}</div>
+    </div>
+  </div>`;
+}
+
+function renderResult(data, mode) {
+  document.getElementById('placeholderWrap').classList.add('d-none');
+  document.getElementById('resultWrap').classList.remove('d-none');
+  document.getElementById('resultHex').textContent = data.result_hex;
+  document.getElementById('resultBin').textContent = data.result_bin;
+
+  const outLabel = mode === 'encrypt' ? 'Ciphertext' : 'Plaintext';
+  document.querySelectorAll('#resultWrap .form-label')[0].textContent = outLabel + ' Hex';
+  document.querySelectorAll('#resultWrap .form-label')[1].textContent = outLabel + ' Binary';
+
+  const p = data.process;
+  const info = data.input_info;
+  const ks = p.key_schedule;
+  let html = '';
+
+  // 1. Input
+  html += accordionItem('input', '1. Input', `
+    ${renderKeyValueTable([
+      {label: info.text.label, value: info.text.original},
+      {label: 'Key', value: info.key.original},
+      {label: 'Format Input', value: info.text.format === 'hex' ? 'Hexadecimal' : 'Binary'}
+    ])}
+  `);
+
+  // 2. Konversi Hex -> Binary
+  if (info.text.converted) {
+    html += accordionItem('conv', '2. Konversi Hex &rarr; Binary', `
+      ${renderKeyValueTable([
+        {label: info.text.label + ' (Hex)', value: info.text.original},
+        {label: info.text.label + ' (Binary)', value: info.text.binary},
+        {label: 'Key (Hex)', value: info.key.original},
+        {label: 'Key (Binary)', value: info.key.binary}
+      ])}
+    `);
+  }
+
+  // 3. Key Expansion
+  html += accordionItem('ke', '3. Key Expansion (w0..w5 &rarr; K0, K1, K2)', `
+    ${renderStepFlow(['Key 16 bit','w0, w1','RotNib(w1)','SubNib','Rcon1','w2, w3','RotNib(w3)','SubNib','Rcon2','w4, w5'])}
+    <div class="row"><div class="col-6">${monoBlock('w0', ks.w0)}</div><div class="col-6">${monoBlock('w1', ks.w1)}</div></div>
+    <div class="round-block"><h6>Pembentukan w2, w3</h6>
+      ${monoBlock('RotNib(w1)', ks.rotnib_w1)}
+      ${monoBlock('SubNib(RotNib(w1))', ks.subnib)}
+      ${monoBlock('RCON1', ks.rcon1)}
+      <div class="row"><div class="col-6">${monoBlock('w2 = w0 &oplus; SubNib &oplus; RCON1', ks.w2)}</div><div class="col-6">${monoBlock('w3 = w2 &oplus; w1', ks.w3)}</div></div>
+    </div>
+    <div class="round-block"><h6>Pembentukan w4, w5</h6>
+      ${monoBlock('RotNib(w3)', ks.rotnib_w3)}
+      ${monoBlock('SubNib(RotNib(w3))', ks.subnib2)}
+      ${monoBlock('RCON2', ks.rcon2)}
+      <div class="row"><div class="col-6">${monoBlock('w4 = w2 &oplus; SubNib &oplus; RCON2', ks.w4)}</div><div class="col-6">${monoBlock('w5 = w4 &oplus; w3', ks.w5)}</div></div>
+    </div>
+  `);
+
+  // 4. Round Key K0, K1, K2
+  html += accordionItem('rk', '4. Round Key (K0, K1, K2)', `
+    ${renderKeyValueTable([
+      {label: 'K0 = w0||w1', value: ks.K0},
+      {label: 'K1 = w2||w3', value: ks.K1},
+      {label: 'K2 = w4||w5', value: ks.K2}
+    ])}
+  `);
+
+  // 5. Initial AddRoundKey
+  html += accordionItem('init', '5. Initial AddRoundKey', `
+    ${stateBlock('Input State', p.initial_state)}
+    ${stateBlock('Setelah AddRoundKey (' + (p.mode === 'encrypt' ? 'K0' : 'K2') + ')', p.initial_add_round_key, 'warning')}
+  `);
+
+  if (p.mode === 'encrypt') {
+    html += accordionItem('r1', 'Round 1 (SubNib &rarr; ShiftRows &rarr; MixColumns &rarr; AddRoundKey K1)', `
+      ${stateBlock('Input', p.round1.input)}
+      ${stateBlock('Setelah SubNib', p.round1.sub_nib)}
+      ${stateBlock('Setelah ShiftRows', p.round1.shift_rows)}
+      ${stateBlock('Setelah MixColumns', p.round1.mix_columns)}
+      ${stateBlock('Setelah AddRoundKey (K1)', p.round1.add_round_key, 'warning')}
+    `, roundBadge(1));
+    html += accordionItem('r2', 'Round 2 / Final (SubNib &rarr; ShiftRows &rarr; AddRoundKey K2)', `
+      ${stateBlock('Input', p.round2.input)}
+      ${stateBlock('Setelah SubNib', p.round2.sub_nib)}
+      ${stateBlock('Setelah ShiftRows', p.round2.shift_rows)}
+      ${stateBlock('Setelah AddRoundKey (K2) &mdash; Ciphertext', p.round2.add_round_key, 'danger')}
+    `, roundBadge(2));
+  } else {
+    html += accordionItem('r1', 'Round 1 (InvShiftRows &rarr; InvSubNib &rarr; AddRoundKey K1 &rarr; InvMixColumns)', `
+      ${stateBlock('Input', p.round1.input)}
+      ${stateBlock('Setelah InvShiftRows', p.round1.inv_shift_rows)}
+      ${stateBlock('Setelah InvSubNib', p.round1.inv_sub_nib)}
+      ${stateBlock('Setelah AddRoundKey (K1)', p.round1.add_round_key, 'warning')}
+      ${stateBlock('Setelah InvMixColumns', p.round1.inv_mix_columns)}
+    `, roundBadge(1));
+    html += accordionItem('r2', 'Round 2 / Final (InvShiftRows &rarr; InvSubNib &rarr; AddRoundKey K0)', `
+      ${stateBlock('Input', p.round2.input)}
+      ${stateBlock('Setelah InvShiftRows', p.round2.inv_shift_rows)}
+      ${stateBlock('Setelah InvSubNib', p.round2.inv_sub_nib)}
+      ${stateBlock('Setelah AddRoundKey (K0) &mdash; Plaintext', p.round2.add_round_key, 'danger')}
+    `, roundBadge(2));
+  }
+
+  document.getElementById('accordionContainer').innerHTML = html;
+}
+</script>
+</body>
+</html>

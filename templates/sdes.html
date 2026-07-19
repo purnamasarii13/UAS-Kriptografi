@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-DES &mdash; CryptoLab</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="/"><i class="bi bi-shield-lock-fill me-1"></i>CryptoLab</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" title="Buka menu navigasi" aria-label="Buka menu navigasi">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
+        <li class="nav-item"><a class="nav-link" href="/des">DES</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/sdes">S-DES</a></li>
+        <li class="nav-item"><a class="nav-link" href="/aes">AES-128</a></li>
+        <li class="nav-item"><a class="nav-link" href="/saes">S-AES</a></li>
+        <li class="nav-item">
+          <button id="themeToggle" class="theme-toggle" title="Ganti tema"><i id="themeIcon" class="bi bi-moon-stars-fill"></i></button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container-xl py-4">
+  <div class="glass module-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <h2 class="mb-1"><i class="bi bi-diagram-3-fill me-2"></i>S-DES &mdash; Simplified DES</h2>
+      <p class="text-muted mb-0">Blok 8 bit &middot; Kunci 10 bit &middot; 2 Round Feistel &middot; P10/P8, S0/S1, P4</p>
+    </div>
+  </div>
+
+  <div class="row g-4 module-stack">
+    <div class="col-12">
+      <div class="glass p-4">
+        <h5 class="mb-3"><i class="bi bi-pencil-square me-2"></i>Input</h5>
+        <div class="mb-3">
+          <label class="form-label" for="mode">Mode</label>
+          <select id="mode" class="form-select" title="Pilih mode encrypt atau decrypt">
+            <option value="encrypt">Encrypt (Plaintext &rarr; Ciphertext)</option>
+            <option value="decrypt">Decrypt (Ciphertext &rarr; Plaintext)</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" id="textLabel">Plaintext (8-bit Binary)</label>
+          <input type="text" id="textInput" class="form-control" placeholder="8 bit biner">
+          <div class="form-text text-muted">Contoh: 10111101</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Key (10-bit Binary)</label>
+          <input type="text" id="keyInput" class="form-control" placeholder="10 bit biner">
+          <div class="form-text text-muted">Contoh: 1010000010</div>
+        </div>
+        <div id="errorBox" class="d-none mb-3"></div>
+        <div class="form-actions">
+          <div class="action-row">
+            <button id="submitBtn" class="btn btn-gradient flex-fill"><i class="bi bi-play-fill me-1"></i>Submit</button>
+            <button id="loadExampleBtn" class="btn example-btn"><i class="bi bi-magic me-1"></i>Load Example</button>
+            <button id="resetBtn" class="btn btn-outline-glass"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultWrap" class="glass p-4 d-none mt-4">
+        <h5 class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Hasil</h5>
+        <div class="result-box mb-3">
+          <div class="form-label mb-1">Hasil Hex</div>
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <div id="resultHex" class="result-value"></div>
+            <button class="btn btn-sm btn-outline-glass copy-btn" onclick="copyToClipboard(document.getElementById('resultHex').textContent, this)"><i class="bi bi-clipboard"></i> Copy</button>
+          </div>
+          <div class="form-label mb-1 mt-3">Hasil Binary</div>
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <div id="resultBin" class="result-sub"></div>
+            <button class="btn btn-sm btn-outline-glass copy-btn" onclick="copyToClipboard(document.getElementById('resultBin').textContent, this)"><i class="bi bi-clipboard"></i> Copy</button>
+          </div>
+        </div>
+        <div class="toolbar-btns mb-3">
+          <button id="toggleSolusi" class="btn btn-outline-glass"><i class="bi bi-eye me-1"></i>Tampilkan Solusi Penyelesaian</button>
+        </div>
+        <div id="solutionWrap" class="d-none"><div id="accordionContainer" class="accordion"></div></div>
+      </div>
+      <div id="placeholderWrap" class="glass p-5 text-center text-muted mt-4">
+        <i class="bi bi-arrow-left-circle placeholder-icon"></i>
+        <p class="mt-2 mb-0">Isi form di atas lalu klik Submit untuk melihat proses lengkap S-DES.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="text-center pb-4">© 2026 | Purnamasari Siregar — CryptoLab (Tugas UAS Kriptografi)</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+const modeSel = document.getElementById('mode');
+const textLabel = document.getElementById('textLabel');
+const textInput = document.getElementById('textInput');
+const keyInput = document.getElementById('keyInput');
+
+modeSel.addEventListener('change', () => {
+  textLabel.textContent = (modeSel.value === 'encrypt' ? 'Plaintext' : 'Ciphertext') + ' (8-bit Binary)';
+});
+
+document.getElementById('loadExampleBtn').addEventListener('click', () => {
+  modeSel.value = 'encrypt';
+  modeSel.dispatchEvent(new Event('change'));
+  textInput.value = '10111101';
+  keyInput.value = '1010000010';
+  clearError('errorBox');
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  textInput.value = '';
+  keyInput.value = '';
+  document.getElementById('resultWrap').classList.add('d-none');
+  document.getElementById('placeholderWrap').classList.remove('d-none');
+  document.getElementById('accordionContainer').innerHTML = '';
+  document.getElementById('solutionWrap').classList.add('d-none');
+  document.getElementById('toggleSolusi').innerHTML = '<i class="bi bi-eye me-1"></i>Tampilkan Solusi Penyelesaian';
+  clearError('errorBox');
+});
+
+setupSolutionToggle('toggleSolusi', 'solutionWrap');
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  clearError('errorBox');
+  const mode = modeSel.value;
+  const text = textInput.value.trim();
+  const key = keyInput.value.trim();
+  try {
+    const res = await fetch('/api/sdes', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({mode, text, key})
+    });
+    const data = await res.json();
+    if (!res.ok) { showError('errorBox', data.error); return; }
+    renderResult(data, mode);
+  } catch (e) { showError('errorBox', 'Terjadi kesalahan: ' + e.message); }
+});
+
+function renderResult(data, mode) {
+  document.getElementById('placeholderWrap').classList.add('d-none');
+  document.getElementById('resultWrap').classList.remove('d-none');
+  document.getElementById('resultHex').textContent = data.result_hex;
+  document.getElementById('resultBin').textContent = data.result_bin;
+
+  const outLabel = mode === 'encrypt' ? 'Ciphertext' : 'Plaintext';
+  document.querySelectorAll('#resultWrap .form-label')[0].textContent = outLabel + ' Hex';
+  document.querySelectorAll('#resultWrap .form-label')[1].textContent = outLabel + ' Binary';
+
+  const p = data.process;
+  const info = data.input_info;
+  const ks = p.key_schedule;
+  let html = '';
+
+  html += accordionItem('input', 'Input', `
+    ${renderKeyValueTable([
+      {label: info.text.label, value: info.text.original},
+      {label: 'Key', value: info.key.original}
+    ])}
+  `);
+
+  html += accordionItem('p10', 'P10 &amp; Split', `
+    ${renderStepFlow(['Key 10 bit','P10','Split 5/5'])}
+    ${monoBlock('Key Input', ks.key10)}
+    ${monoBlock('Setelah P10', ks.p10)}
+    <div class="row"><div class="col-6">${monoBlock('Left0', ks.left0)}</div><div class="col-6">${monoBlock('Right0', ks.right0)}</div></div>
+  `);
+
+  html += accordionItem('ls1', 'LS-1 &rarr; P8 &rarr; K1', `
+    ${monoBlock('LS-1 (shift 1)', '')}
+    <div class="row"><div class="col-6">${monoBlock('Left', ks.ls1_left)}</div><div class="col-6">${monoBlock('Right', ks.ls1_right)}</div></div>
+    ${monoBlock('K1 (setelah P8)', ks.k1)}
+  `, roundBadge(1, 'K1'));
+
+  html += accordionItem('ls2', 'LS-2 &rarr; P8 &rarr; K2', `
+    ${monoBlock('LS-2 (shift 2 dari hasil LS-1)', '')}
+    <div class="row"><div class="col-6">${monoBlock('Left', ks.ls2_left)}</div><div class="col-6">${monoBlock('Right', ks.ls2_right)}</div></div>
+    ${monoBlock('K2 (setelah P8)', ks.k2)}
+    <h6 class="mt-3">Tabel Key</h6>
+    ${renderKeyValueTable([{label:'K1', value: ks.k1}, {label:'K2', value: ks.k2}], ['Subkey','Nilai (8 bit)'])}
+  `, roundBadge(2, 'K2'));
+
+  html += accordionItem('ip', 'IP (Initial Permutation)', `
+    ${monoBlock('Input (8 bit)', p.input)}
+    ${monoBlock('Setelah IP', p.initial_permutation)}
+    ${monoBlock('Kunci digunakan Round 1', p.k1_used_round1)}
+  `);
+
+  [p.round1, p.round2].forEach(r => {
+    const keyLabel = r.round === 1 ? 'K1' : 'K2';
+    html += accordionItem('round'+r.round, `Round ${r.round} (fK dengan ${keyLabel})`, `
+      ${renderStepFlow(['Left/Right','Expansion','XOR','S0','S1','P4','XOR','Swap'])}
+      <div class="row mb-2"><div class="col-6">${monoBlock('Left in', r.left_in)}</div><div class="col-6">${monoBlock('Right in', r.right_in)}</div></div>
+      ${monoBlock('Expansion (EP) dari Right &mdash; 8 bit', r.expansion)}
+      ${monoBlock('XOR ('+keyLabel+')', r.xor_result)}
+      <div class="row g-2 mb-2">
+        <div class="col-6"><div class="mono-block" style="font-size:.8rem;"><b>${r.s0.box}</b><br>in: ${r.s0.input}<br>row=${r.s0.row} col=${r.s0.col}<br>out: ${r.s0.output}</div></div>
+        <div class="col-6"><div class="mono-block" style="font-size:.8rem;"><b>${r.s1.box}</b><br>in: ${r.s1.input}<br>row=${r.s1.row} col=${r.s1.col}<br>out: ${r.s1.output}</div></div>
+      </div>
+      ${monoBlock('Gabungan S0S1 (input P4)', r.p4_input)}
+      ${monoBlock('P4', r.p4_output)}
+      ${monoBlock('XOR (hasil baru Left)', r.xor_left)}
+      ${monoBlock('Output fK (Left baru || Right tetap)', r.output)}
+    `, roundBadge(r.round));
+  });
+
+  html += accordionItem('swap', 'Swap', `
+    ${monoBlock('Hasil setelah Swap 4-bit (sebelum Round 2)', p.swap)}
+  `);
+
+  html += accordionItem('invip', 'Inverse IP', `
+    ${monoBlock('Hasil Inverse IP', p.inverse_ip)}
+  `);
+
+  document.getElementById('accordionContainer').innerHTML = html;
+}
+</script>
+</body>
+</html>

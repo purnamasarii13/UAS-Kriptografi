@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoLab &mdash; Simulasi Algoritma Kriptografi Simetris</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="/"><i class="bi bi-shield-lock-fill me-1"></i>CryptoLab</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" title="Buka menu navigasi" aria-label="Buka menu navigasi">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link active" href="/">Beranda</a></li>
+        <li class="nav-item"><a class="nav-link" href="/des">DES</a></li>
+        <li class="nav-item"><a class="nav-link" href="/sdes">S-DES</a></li>
+        <li class="nav-item"><a class="nav-link" href="/aes">AES-128</a></li>
+        <li class="nav-item"><a class="nav-link" href="/saes">S-AES</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
+        <li class="nav-item"><a class="nav-link" href="#referensi">Referensi</a></li>
+        <li class="nav-item">
+          <button id="themeToggle" class="theme-toggle" title="Ganti tema">
+            <i id="themeIcon" class="bi bi-moon-stars-fill"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO SECTION -->
+<header class="container text-center py-5 mt-4">
+  <h1 class="hero-title">Simulasi Algoritma Kriptografi Simetris</h1>
+  <p class="hero-sub lead mt-3 mx-auto" style="max-width:720px;">
+    Aplikasi web simulasi algoritma kriptografi simetris. Eksplorasi proses lengkap
+    DES, S-DES, AES-128, dan S-AES &mdash; mulai dari key schedule, setiap round
+    Feistel/Substitution-Permutation, hingga ciphertext akhir. Seluruh perhitungan
+    ditampilkan secara transparan untuk keperluan pembelajaran kriptografi (UAS).
+  </p>
+</header>
+
+<!-- ALGORITHM CARDS -->
+<main class="container pb-5">
+  <div class="row g-4">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="glass algo-card d-flex flex-column" style="animation-delay:.05s">
+        <div>
+          <i class="bi bi-key-fill"></i>
+          <h3>DES</h3>
+          <p>Data Encryption Standard &mdash; blok 64 bit, kunci 64 bit, 16 round Feistel penuh, mendukung input Binary maupun Hexadecimal.</p>
+        </div>
+        <a href="/des" class="btn btn-gradient mt-3"><i class="bi bi-play-fill me-1"></i>Buka Simulator</a>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="glass algo-card d-flex flex-column" style="animation-delay:.15s">
+        <div>
+          <i class="bi bi-diagram-3-fill"></i>
+          <h3>S-DES</h3>
+          <p>Simplified DES &mdash; blok 8 bit, kunci 10 bit, 2 round Feistel, ideal untuk memahami dasar struktur DES.</p>
+        </div>
+        <a href="/sdes" class="btn btn-gradient mt-3"><i class="bi bi-play-fill me-1"></i>Buka Simulator</a>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="glass algo-card d-flex flex-column" style="animation-delay:.25s">
+        <div>
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <h3>AES-128</h3>
+          <p>Advanced Encryption Standard &mdash; state matrix 4x4, 10 round SPN, kunci 128 bit dalam format Hex.</p>
+        </div>
+        <a href="/aes" class="btn btn-gradient mt-3"><i class="bi bi-play-fill me-1"></i>Buka Simulator</a>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="glass algo-card d-flex flex-column" style="animation-delay:.35s">
+        <div>
+          <i class="bi bi-collection-fill"></i>
+          <h3>S-AES</h3>
+          <p>Simplified AES &mdash; state matrix 2x2 nibble, 2 round, kunci 16 bit, mendukung input Binary maupun Hexadecimal.</p>
+        </div>
+        <a href="/saes" class="btn btn-gradient mt-3"><i class="bi bi-play-fill me-1"></i>Buka Simulator</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TENTANG APLIKASI -->
+  <div id="tentang" class="glass p-4 p-md-5 mt-5 about-section">
+    <h4 class="mb-3"><i class="bi bi-info-circle-fill me-2"></i>Tentang Aplikasi</h4>
+    <p>
+      CryptoLab dibangun sebagai media pembelajaran interaktif untuk mata kuliah Kriptografi.
+      Tidak seperti kalkulator enkripsi pada umumnya yang hanya menampilkan hasil akhir,
+      setiap modul di CryptoLab membedah seluruh proses internal algoritma &mdash; termasuk
+      pembentukan subkey, isi setiap round, hasil setiap S-Box/SubBytes, hingga permutasi akhir
+      &mdash; sehingga hasil perhitungan aplikasi dapat dibandingkan langsung dengan perhitungan
+      manual di kertas.
+    </p>
+    <div class="row g-3 mt-1">
+      <div class="col-md-4">
+        <div class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>Input Plaintext / Ciphertext / Key dengan validasi format &amp; pilihan Binary/Hex</span></div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>Mode Encrypt dan Decrypt dua arah pada setiap modul</span></div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>Accordion "Tampilkan Solusi Penyelesaian" untuk seluruh langkah round</span></div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>Contoh input siap pakai (Load Example) di setiap modul</span></div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>Copy hasil &amp; Download langkah penyelesaian sebagai PDF</span></div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex gap-2"><i class="bi bi-check2-circle text-success"></i><span>Seluruh algoritma dihitung manual tanpa library kriptografi</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERENSI ALGORITMA -->
+  <div id="referensi" class="glass p-4 p-md-5 mt-4 reference-section">
+    <h4 class="mb-3"><i class="bi bi-journal-bookmark-fill me-2"></i>Referensi Algoritma</h4>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <h5>DES / S-DES</h5>
+        <ul>
+          <li>National Institute of Standards and Technology (NIST), <em>Data Encryption Standard (DES)</em>, FIPS PUB 46-3, 1999.</li>
+          <li>W. Stallings, <em>Cryptography and Network Security: Principles and Practice</em>, Pearson &mdash; bab Simplified DES (S-DES) oleh E. Schaefer.</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h5>AES / S-AES</h5>
+        <ul>
+          <li>National Institute of Standards and Technology (NIST), <em>Advanced Encryption Standard (AES)</em>, FIPS PUB 197, 2001.</li>
+          <li>M. Musa, E. Schaefer, S. Wedig, <em>A Simplified AES Algorithm and its Linear and Differential Cryptanalyses</em>, Cryptologia, 2003.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="pb-4">
+  <div class="container">
+    <div class="glass p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+      <div class="text-center text-md-start">
+        <div class="fw-bold text-white"><i class="bi bi-shield-lock-fill me-1"></i>CryptoLab</div>
+        <div class="small">Simulasi Algoritma Kriptografi Simetris &mdash; Tugas UAS Kriptografi.</div>
+      </div>
+      <div class="d-flex gap-3">
+        <a href="/des" class="nav-link">DES</a>
+        <a href="/sdes" class="nav-link">S-DES</a>
+        <a href="/aes" class="nav-link">AES-128</a>
+        <a href="/saes" class="nav-link">S-AES</a>
+      </div>
+      <div class="small text-center text-md-end">&copy; 2026 CryptoLab. Dibangun dengan Flask &amp; Bootstrap 5.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
