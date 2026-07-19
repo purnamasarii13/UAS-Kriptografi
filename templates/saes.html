@@ -112,7 +112,7 @@
   </div>
 </main>
 
-<footer class="text-center pb-4">© 2026 | Purnamasari Siregar — CryptoLab (UAS Kriptografi)</footer>
+<footer class="text-center pb-4">© 2026 | Purnamasari Siregar — CryptoLab (Tugas UAS Kriptografi)</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -148,13 +148,22 @@ modeSel.addEventListener('change', refreshLabels);
 document.querySelectorAll('input[name="format"]').forEach(r => r.addEventListener('change', refreshLabels));
 refreshLabels();
 
-document.getElementById('loadExampleBtn').addEventListener('click', () => {
-  document.getElementById('fmtHex').checked = true;
-  modeSel.value = 'encrypt';
+document.getElementById("loadExampleBtn").addEventListener("click", () => {
+  const fmt = document.querySelector('input[name="format"]:checked').value;
+
+  // Default mode
+  modeSel.value = "encrypt";
+
+  if (fmt === "hex") {
+    textInput.value = "D728";
+    keyInput.value = "4AF5";
+  } else {
+    textInput.value = "1101011100101000";
+    keyInput.value = "0100101011110101";
+  }
+
   refreshLabels();
-  textInput.value = 'D728';
-  keyInput.value = '4AF5';
-  clearError('errorBox');
+  clearError("errorBox");
 });
 
 document.getElementById('resetBtn').addEventListener('click', () => {
