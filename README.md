@@ -1,9 +1,3 @@
-Sangat setuju. Untuk repository GitHub yang akan dinilai dosen, README sebaiknya tidak hanya berisi cara menjalankan aplikasi, tetapi juga menjadi **dokumentasi project**. Berdasarkan project UAS yang Anda buat (Flask + DES + S-DES + AES + S-AES), saya menyarankan README dikembangkan menjadi sekitar **250–400 baris** sehingga terlihat profesional seperti dokumentasi proyek open source.
-
-Berikut adalah struktur yang saya rekomendasikan beserta isi yang dapat langsung Anda gunakan.
-
----
-
 # 🔐 Web Simulasi Algoritma Kriptografi
 
 > **UAS Mata Kuliah Kriptografi**
@@ -329,6 +323,6 @@ Modul S-AES menampilkan proses pembentukan round key K0, K1, dan K2 menggunakan 
 | ------------------ | ---------------------------------- |
 | Mata Kuliah        | Kriptografi                        |
 | Tugas              | Ujian Akhir Semester (UAS)         |
-| Pembuat            | **Purnamasari Siregar**            |
+| Pembuat            | Purnamasari Siregar                |
 | Semester           | 6                                  |
 | Tahun Akademik     | 2025/2026                          |
